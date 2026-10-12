@@ -200,8 +200,9 @@ warp-topics:
     description: |
       Groups the indexed requests of a time window by meaning, names each
       group with Warp's model, and stores the result for Warp's `list_topics`
-      tool. A run replaces the previous topics when it finishes, and leaves
-      them as they were if it cannot.
+      tool. A run that finds indexed requests in the window replaces the
+      previous topics when it finishes, and leaves them as they were if it
+      cannot. A run that finds none completes without changing them.
 
       One run takes in at most 20,000 requests. A window that holds more is
       sampled across its length, and the status says so in `capped`.

@@ -274,6 +274,7 @@
               "features/keys-management",
               "features/async-inference",
               "features/webhooks",
+              "features/news-feeds",
               {
                 "group": "Governance",
                 "icon": "user-lock",

@@ -577,6 +577,7 @@ var configstoreMigrationSteps = []migrationStep{
 	{IDs: []string{"add_skills_external_client_url_column"}, run: migrationAddSkillsExternalClientURLColumn},
 	{IDs: []string{"backfill_skills_external_client_url"}, run: migrationBackfillSkillsExternalClientURL},
 	{IDs: []string{"add_virtual_key_metadata_column"}, run: migrationAddVirtualKeyMetadataColumn},
+	{IDs: []string{"add_rss_feeds_table"}, run: migrationAddRSSFeedsTable},	
 }
 
 // warpLogEmbeddingColumns are the semantic-search configuration columns added
@@ -1118,6 +1119,27 @@ func migrationAddNotificationsTable(ctx context.Context, db *gorm.DB, logger sch
 		},
 		Rollback: func(tx *gorm.DB) error {
 			return tx.WithContext(ctx).Migrator().DropTable(&tables.TableNotification{})
+		},
+	})
+}
+
+// migrationAddRSSFeedsTable creates rss_feeds and seeds the builtin catalog.
+// Builtin rows added to the catalog later are picked up by the boot-time
+// SeedBuiltinRSSFeeds call, not by a new migration.
+func migrationAddRSSFeedsTable(ctx context.Context, db *gorm.DB, logger schemas.Logger) error {
+	migrationName := "add_rss_feeds_table"
+	logger.Info("[configstore] starting migration %s", migrationName)
+	defer logger.Info("[configstore] finished migration %s", migrationName)
+	return RunSingleMigration(ctx, nil, db, logger, &migrator.Migration{
+		ID: migrationName,
+		Migrate: func(tx *gorm.DB) error {
+			if err := tx.WithContext(ctx).AutoMigrate(&tables.TableRSSFeed{}); err != nil {
+				return err
+			}
+			return SeedBuiltinRSSFeeds(ctx, tx)
+		},
+		Rollback: func(tx *gorm.DB) error {
+			return tx.WithContext(ctx).Migrator().DropTable(&tables.TableRSSFeed{})
 		},
 	})
 }

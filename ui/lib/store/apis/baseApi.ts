@@ -216,6 +216,8 @@ export const baseApi = createApi({
 		"EdgeMCPServers",
 		"EdgeConfig",
 		"Notifications",
+		"RSSFeeds",
+		"RSSItems",
 		"SidekiqJobs",
 		"WarpConfig",
 		"WarpBackfillStatus",
